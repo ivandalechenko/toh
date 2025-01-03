@@ -1,0 +1,20 @@
+.Community {
+    margin-top: 120px;
+
+    &_title {
+        font-size: 75px;
+        font-weight: 900;
+        text-align: center;
+
+        @media(max-width: 700px) {
+            font-size: 48px;
+        }
+    }
+
+    &_media {
+        margin-top: 16px;
+        display: flex;
+        justify-content: center;
+        column-gap: 12px;
+    }
+}

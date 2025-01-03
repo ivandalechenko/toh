@@ -1,0 +1,61 @@
+.roadmap {
+    margin-top: 120px;
+
+    &_title {
+        font-size: 75px;
+        font-weight: 900;
+        text-align: center;
+
+        @media(max-width: 550px) {
+            font-size: 48px;
+        }
+    }
+
+
+    &_content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+        margin-top: 24px;
+
+        @media(max-width: 1000px) {
+            padding-left: 150px;
+        }
+
+        @media(max-width: 700px) {
+            padding-left: 0px;
+            flex-wrap: wrap;
+        }
+
+        &_text {
+            padding: 30px;
+            padding-right: 60px;
+            padding-left: 180px;
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 40px;
+
+            @media(max-width: 700px) {
+                padding: 20px 30px;
+                padding-top: 100px;
+                border-radius: 100% 100% 12px 12px;
+            }
+        }
+
+        &_img {
+            @media(max-width: 700px) {
+                width: 100% !important;
+                height: 250px;
+                top: 50px;
+            }
+
+            img {
+                width: 300px;
+                height: 300px;
+                border-radius: 300px;
+            }
+        }
+    }
+
+}

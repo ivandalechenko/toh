@@ -1,0 +1,37 @@
+.stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    gap: 24px;
+
+    @media(max-width: 550px) {
+        flex-wrap: wrap;
+    }
+
+    &_element {
+        width: 100%;
+        max-width: 300px;
+        height: 120px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        flex-wrap: wrap;
+
+        &_header {
+            width: 100%;
+            font-weight: 900;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        &_value {
+            width: 100%;
+            font-weight: 500;
+            font-size: 24px;
+            text-align: center;
+        }
+    }
+}

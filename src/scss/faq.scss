@@ -1,0 +1,67 @@
+.faq {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 120px;
+
+    &_title {
+        font-size: 75px;
+        font-weight: 900;
+        text-align: center;
+
+        @media(max-width: 550px) {
+            font-size: 48px;
+        }
+    }
+
+    &_list {
+        display: flex;
+        flex-wrap: wrap;
+        row-gap: 24px;
+        margin-top: 24px;
+    }
+
+
+    &_element {
+        width: 100%;
+        padding: 30px;
+        cursor: pointer;
+
+        &_quest {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+
+            &_text {
+                text-transform: uppercase;
+                font-weight: 600;
+                font-size: 24px;
+
+                @media(max-width: 550px) {
+                    font-size: 18px;
+                }
+            }
+        }
+
+        &_opener {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        &_answer {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid white;
+            font-size: 18px;
+
+            @media(max-width: 550px) {
+                font-size: 12px;
+            }
+        }
+    }
+
+}

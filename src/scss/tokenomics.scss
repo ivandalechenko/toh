@@ -1,0 +1,110 @@
+.tokenomics {
+    margin-top: 120px;
+    padding: 0px 12px;
+
+    &_inner {
+        overflow: hidden;
+        padding: 0px !important;
+        margin-top: 32px !important;
+    }
+
+    &_content {
+        padding: 40px;
+        row-gap: 32px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        background: linear-gradient(0deg, #1A1F2E, #1A1F2E00);
+        position: relative;
+        z-index: 3
+    }
+
+    &_title {
+        font-size: 75px;
+        font-weight: 900;
+        text-align: center;
+
+        @media(max-width: 700px) {
+            font-size: 48px;
+        }
+    }
+
+    &_decor {
+        align-items: start;
+        width: 100% !important;
+        top: 24px;
+    }
+
+
+
+    &_market {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(#282F42, 0.8);
+        border: 1px solid white;
+        backdrop-filter: blur(10px);
+        width: 293px;
+        height: 77px;
+        font-weight: 600;
+        border-radius: 10px;
+    }
+
+
+
+    &_supply {
+        width: 100%;
+
+        position: relative;
+        z-index: 2;
+
+        &_header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        &_value {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+        }
+    }
+
+    &_cards {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        text-align: left;
+
+        &_element {
+            border: 1px solid white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 30%;
+            min-height: 200px;
+            background: linear-gradient(129deg, #282F42, #363F57);
+
+            @media(max-width: 800px) {
+                width: calc(50% - 6px);
+            }
+
+            @media(max-width: 500px) {
+                width: calc(100%);
+            }
+
+            &_header {
+                font-size: 22px;
+                font-weight: 600;
+            }
+
+            &_subheader {
+                font-size: 18px;
+                font-weight: 400;
+            }
+        }
+    }
+
+
+}
