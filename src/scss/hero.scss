@@ -70,6 +70,10 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
+        @media(max-width: 550px) {
+            flex-wrap: wrap;
+        }
     }
 
     &_decor {
@@ -85,21 +89,19 @@
         }
 
         @media(max-width: 550px) {
-            width: 0px;
+            width: 100%
         }
     }
 
     &_dog {
         @media(max-width: 550px) {
             top: -200px;
-            left: 150px;
         }
     }
 
     &_light {
         @media(max-width: 550px) {
             top: -200px;
-            left: 150px;
         }
     }
 
