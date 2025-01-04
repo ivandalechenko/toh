@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Media from "./Media";
 
 let API_URL = 'http://localhost:5000'
-API_URL = 'http://api.teddyonheels.com'
+API_URL = 'https://api.teddyonheels.com'
 
 export default () => {
     const [tweets, settweets] = useState([]);
