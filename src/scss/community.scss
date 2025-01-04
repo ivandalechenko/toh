@@ -11,10 +11,92 @@
         }
     }
 
+    &_some {
+        padding: 32px 0px;
+    }
+
     &_media {
         margin-top: 16px;
         display: flex;
         justify-content: center;
         column-gap: 12px;
+    }
+
+    &_top {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 32px;
+        gap: 18px;
+
+        &_header {
+            width: 100%;
+            font-weight: 500;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        &_element {
+            width: 260px;
+            background: #242730;
+            border-radius: 0px 0px 12px 12px;
+            display: block;
+
+            &_content {
+                padding: 20px;
+
+                &_name {
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+
+                    &_text {
+                        font-size: 12px;
+                        color: #B7B9D2;
+                    }
+
+                    &_logo {
+                        align-items: end;
+                        justify-content: right;
+                        top: 8px;
+
+                        img {
+                            width: 60px;
+                            height: 60px;
+                        }
+                    }
+                }
+
+                &_text {
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-top: 12px;
+                }
+
+                &_stat {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 12px;
+
+                    &_el {
+                        color: #808191;
+                    }
+                }
+            }
+
+            &_img {
+                width: 260px;
+                height: 150px;
+
+                img {
+                    width: 260px;
+                    border-radius: 12px 12px 0px 0px;
+                    height: 150px;
+                    object-fit: cover;
+                }
+
+            }
+        }
     }
 }

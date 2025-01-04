@@ -39,7 +39,7 @@ function App() {
       <Stats />
       <About />
       <Tokenomics />
-      {/* <Community /> */}
+      <Community />
       <Roadmap />
       <Faq />
     </div>
