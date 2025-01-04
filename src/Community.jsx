@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Media from "./Media";
 
-// let API_URL = 'http://localhost:5000'
+let API_URL = 'http://localhost:5000'
 API_URL = 'http://api.teddyonheels.com'
 
 export default () => {
