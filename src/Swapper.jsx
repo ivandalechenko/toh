@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
-import { Connection, PublicKey, Transaction } from "@solana/web3.js";
+import { Connection, PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
 import { Buffer } from "buffer"; // Import Buffer explicitly
 
+let DEVNET_URL = "https://sly-indulgent-wave.solana-mainnet.quiknode.pro/7738767fc1e78d5157e8c6fa4450d9abe43d5127";
 window.Buffer = Buffer;
+
+
 
 export default function Swapper() {
     const [solCount, setSolCount] = useState("");
     const [tohCount, setTohCount] = useState("");
     const [walletConnected, setWalletConnected] = useState(false);
     const [publicKey, setPublicKey] = useState(null);
-    const connection = new Connection("https://api.mainnet-beta.solana.com");
+    const connection = new Connection(DEVNET_URL);
 
     const TOH_MINT_ADDRESS = "C1u7A1zBp2ck9ui89dVD6VC4FmXNe2C2HK9mPdkVHUSB"; // Replace with actual mint address
 
@@ -55,7 +58,7 @@ export default function Swapper() {
     };
 
     const handleSwap = async () => {
-        console.log('trytoswap');
+        console.log("Attempting to swap...");
 
         if (!walletConnected || !publicKey) {
             alert("Please connect your wallet first.");
@@ -63,40 +66,72 @@ export default function Swapper() {
         }
 
         try {
-            const response = await fetch("https://quote-api.jup.ag/v4/quote", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    inputMint: "So11111111111111111111111111111111111111112", // SOL mint address
-                    outputMint: TOH_MINT_ADDRESS,
-                    amount: parseFloat(solCount) * 1e9, // Convert SOL to lamports
-                    slippageBps: 50, // Slippage 0.5%
-                }),
-            });
-
-            const { routes } = await response.json();
-            if (!routes || routes.length === 0) {
-                alert("No route found for the swap.");
+            const solCountLamports = parseFloat(solCount) * 1e9;
+            if (isNaN(solCountLamports) || solCountLamports <= 0) {
+                alert("Enter a valid SOL amount.");
                 return;
             }
 
-            const bestRoute = routes[0];
-            const transaction = Transaction.from(Buffer.from(bestRoute.txnBase64, "base64"));
+            // Получение котировки
+            const queryParams = new URLSearchParams({
+                inputMint: "So11111111111111111111111111111111111111112",
+                outputMint: TOH_MINT_ADDRESS,
+                amount: solCountLamports.toString(),
+                slippageBps: "50",
+            }).toString();
 
-            transaction.feePayer = new PublicKey(publicKey);
-            transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+            const quoteResponse = await fetch(`https://quote-api.jup.ag/v6/quote?${queryParams}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
 
+            const quoteData = await quoteResponse.json();
+            console.log("Quote Response:", quoteData);
+
+            const { routePlan } = quoteData;
+            if (!routePlan || routePlan.length === 0 || !routePlan[0]?.swapInfo) {
+                alert("No valid route found for the swap.");
+                return;
+            }
+
+            const swapResponse = await fetch("https://quote-api.jup.ag/v6/swap", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    quoteResponse: quoteData,
+                    userPublicKey: publicKey,
+                    wrapAndUnwrapSOL: true,
+                }),
+            });
+
+            const { swapTransaction } = await swapResponse.json();
+            const swapTransactionBuf = Buffer.from(swapTransaction, "base64");
+            const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
+
+            // Подписание транзакции с помощью Phantom
             const provider = getProvider();
             const signedTransaction = await provider.signTransaction(transaction);
-            const txId = await connection.sendRawTransaction(signedTransaction.serialize());
-            await connection.confirmTransaction(txId);
 
-            alert("Swap completed successfully: " + txId);
+            const latestBlockHash = await connection.getLatestBlockhash();
+
+            // Отправка транзакции
+            const rawTransaction = signedTransaction.serialize();
+            const txid = await connection.sendRawTransaction(rawTransaction, {
+                skipPreflight: true,
+                maxRetries: 2,
+            });
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: txid,
+            });
+
+            console.log(`Transaction successful: https://solscan.io/tx/${txid}`);
         } catch (err) {
             console.error("Error during swap:", err);
-            alert("Swap failed.");
         }
     };
+
 
     return (
         <div className="hero_swapper">

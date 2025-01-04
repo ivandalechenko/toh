@@ -27,11 +27,11 @@ export default () => {
                         <img src='/img/dog.png' alt='decor' />
                     </div>
                 </div>
-                {/* <ConnectionProvider endpoint="https://api.mainnet-beta.solana.com">
-        <WalletProvider wallets={wallets} autoConnect>
-          <Swapper />
-        </WalletProvider>
-      </ConnectionProvider> */}
+                <ConnectionProvider endpoint="https://api.mainnet-beta.solana.com">
+                    <WalletProvider wallets={wallets} autoConnect>
+                        <Swapper />
+                    </WalletProvider>
+                </ConnectionProvider>
             </div>
         </div>
     )
