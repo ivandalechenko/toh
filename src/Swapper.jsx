@@ -1,81 +1,41 @@
 import { useState, useEffect } from "react";
 import { Connection, PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
 import { Buffer } from "buffer"; // Import Buffer explicitly
+import { walletStore } from "./walletStore"; // Подключение walletStore
+import { observer } from "mobx-react-lite";
 
 let DEVNET_URL = "https://sly-indulgent-wave.solana-mainnet.quiknode.pro/7738767fc1e78d5157e8c6fa4450d9abe43d5127";
 window.Buffer = Buffer;
 
 
-
-export default function Swapper() {
+export default observer(function Swapper() {
     const [solCount, setSolCount] = useState("");
     const [tohCount, setTohCount] = useState("");
-    const [walletConnected, setWalletConnected] = useState(false);
-    const [publicKey, setPublicKey] = useState(null);
+    const [isSwapDirDefault, setSwapDirDefault] = useState(true);
     const connection = new Connection(DEVNET_URL);
 
-    const TOH_MINT_ADDRESS = "C1u7A1zBp2ck9ui89dVD6VC4FmXNe2C2HK9mPdkVHUSB"; // Replace with actual mint address
-
-    const getProvider = () => {
-        if ("phantom" in window) {
-            const provider = window.phantom?.solana;
-            if (provider?.isPhantom) {
-                return provider;
-            }
-        }
-        window.open("https://phantom.app/", "_blank");
-    };
-
     useEffect(() => {
-        const checkWallet = async () => {
-            const provider = getProvider();
-            if (provider) {
-                try {
-                    const resp = await provider.connect({ onlyIfTrusted: true });
-                    setWalletConnected(true);
-                    setPublicKey(resp.publicKey.toString());
-                } catch (err) {
-                    console.error("Error connecting to wallet:", err);
-                }
-            }
-        };
-        checkWallet();
+        walletStore.checkWallet();
     }, []);
 
-    const handleConnectWallet = async () => {
-        const provider = getProvider();
-        if (!provider) return;
 
-        try {
-            const resp = await provider.connect();
-            setWalletConnected(true);
-            setPublicKey(resp.publicKey.toString());
-            alert("Wallet connected: " + resp.publicKey.toString());
-        } catch (err) {
-            console.error("Wallet connection failed:", err);
-            alert("Failed to connect wallet.");
-        }
-    };
 
     const handleSwap = async () => {
-        console.log("Attempting to swap...");
-
-        if (!walletConnected || !publicKey) {
-            alert("Please connect your wallet first.");
+        if (!walletStore.walletConnected || !walletStore.publicKey) {
+            toast.warning("Please connect your wallet first.");
             return;
         }
 
         try {
             const solCountLamports = parseFloat(solCount) * 1e9;
             if (isNaN(solCountLamports) || solCountLamports <= 0) {
-                alert("Enter a valid SOL amount.");
+                toast.warning("Enter a valid SOL amount.");
                 return;
             }
 
-            // Получение котировки
             const queryParams = new URLSearchParams({
-                inputMint: "So11111111111111111111111111111111111111112",
-                outputMint: TOH_MINT_ADDRESS,
+                inputMint: walletStore.inputMint,
+                outputMint: walletStore.outputMint,
                 amount: solCountLamports.toString(),
                 slippageBps: "50",
             }).toString();
@@ -86,11 +46,10 @@ export default function Swapper() {
             });
 
             const quoteData = await quoteResponse.json();
-            console.log("Quote Response:", quoteData);
-
             const { routePlan } = quoteData;
+
             if (!routePlan || routePlan.length === 0 || !routePlan[0]?.swapInfo) {
-                alert("No valid route found for the swap.");
+                toast.warning("No valid route found for the swap.");
                 return;
             }
 
@@ -99,7 +58,7 @@ export default function Swapper() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     quoteResponse: quoteData,
-                    userPublicKey: publicKey,
+                    userPublicKey: walletStore.publicKey,
                     wrapAndUnwrapSOL: true,
                 }),
             });
@@ -108,14 +67,12 @@ export default function Swapper() {
             const swapTransactionBuf = Buffer.from(swapTransaction, "base64");
             const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
 
-            // Подписание транзакции с помощью Phantom
-            const provider = getProvider();
+            const provider = walletStore.getProvider();
             const signedTransaction = await provider.signTransaction(transaction);
 
             const latestBlockHash = await connection.getLatestBlockhash();
-
-            // Отправка транзакции
             const rawTransaction = signedTransaction.serialize();
+
             const txid = await connection.sendRawTransaction(rawTransaction, {
                 skipPreflight: true,
                 maxRetries: 2,
@@ -133,54 +90,136 @@ export default function Swapper() {
     };
 
 
+
+    const swapInputOutput = () => {
+        const oldStatus = isSwapDirDefault;
+        walletStore.setSwapDir(!oldStatus)
+        setSwapDirDefault(!oldStatus)
+
+    }
+
+    const updateTopCount = (count) => {
+        const countToSet = filterValue(count)
+        updateValues(countToSet, true)
+    };
+
+    const updateBotCount = (count) => {
+        const countToSet = filterValue(count)
+        updateValues(countToSet, false)
+    }
+
+    const filterValue = (count) => {
+        let number = count.replace(/[^0-9.]/g, "");
+        if ((number.match(/\./g) || []).length > 1) {
+            return; // Если больше одной точки, ничего не делаем
+        }
+        let countToSet = number === "." ? "0." : number;
+
+        if (countToSet.length === 0) {
+            countToSet = '0'
+        }
+        if (countToSet.length === 2) {
+            if (countToSet[0] === '0' && countToSet[1] !== '.') {
+                countToSet = countToSet.slice(1)
+            }
+        }
+        return countToSet
+    }
+
+    const updateValues = (countToSet, reverse = false) => {
+        if (reverse) {
+            setSolCount(countToSet);
+            if (!isNaN(parseFloat(countToSet))) {
+                setTohCount(parseFloat(countToSet) * (1 / walletStore.solPerToh));
+            }
+        } else {
+            setTohCount(countToSet);
+            if (!isNaN(parseFloat(countToSet))) {
+                setSolCount(parseFloat(countToSet) * walletStore.solPerToh);
+            }
+        }
+    }
+
     return (
         <div className="hero_swapper">
             <div className="hero_swapper_header">BUY TOH</div>
 
             <div className="hero_swapper_curr">
-                <div className="hero_swapper_curr_name">
-                    <div className="hero_swapper_curr_name_logo">
-                        <img src="/img/solana.svg" alt="Solana logo" />
-                    </div>
-                    <div className="hero_swapper_curr_name_text">Solana</div>
-                </div>
+                {
+                    isSwapDirDefault ? <div className="hero_swapper_curr_name">
+                        <div className="hero_swapper_curr_name_logo">
+                            <img src="/img/solana.svg" alt="Solana logo" />
+                        </div>
+                        <div className="hero_swapper_curr_name_text">Solana</div>
+                    </div> :
+                        <div className="hero_swapper_curr_name">
+                            <div className="hero_swapper_curr_name_logo">
+                                <img src="/img/logo.png" alt="TOH logo" />
+                            </div>
+                            <div className="hero_swapper_curr_name_text">TOH</div>
+                        </div>
+                }
+
                 <input
-                    type="number"
-                    value={solCount}
-                    onChange={(e) => setSolCount(e.target.value)}
+                    type="text"
+                    value={isSwapDirDefault ? solCount : tohCount}
+                    onChange={(e) => {
+                        isSwapDirDefault
+                            ? updateTopCount(e.target.value)
+                            : updateBotCount(e.target.value)
+                    }}
                     placeholder="0.00"
                 />
             </div>
 
             <div className="hero_swapper_swapBtn_wrapper free_img">
-                <div className="hero_swapper_swapBtn" onClick={handleSwap}>
+                <div className="hero_swapper_swapBtn" onClick={swapInputOutput} >
                     <img src="/img/doubleArrow.svg" alt="Swap" />
                 </div>
             </div>
 
             <div className="hero_swapper_curr">
-                <div className="hero_swapper_curr_name">
-                    <div className="hero_swapper_curr_name_logo">
-                        <img src="/img/logo.png" alt="TOH logo" />
-                    </div>
-                    <div className="hero_swapper_curr_name_text">TOH</div>
-                </div>
+                {
+                    !isSwapDirDefault ? <div className="hero_swapper_curr_name">
+                        <div className="hero_swapper_curr_name_logo">
+                            <img src="/img/solana.svg" alt="Solana logo" />
+                        </div>
+                        <div className="hero_swapper_curr_name_text">Solana</div>
+                    </div> :
+                        <div className="hero_swapper_curr_name">
+                            <div className="hero_swapper_curr_name_logo">
+                                <img src="/img/logo.png" alt="TOH logo" />
+                            </div>
+                            <div className="hero_swapper_curr_name_text">TOH</div>
+                        </div>
+                }
                 <input
-                    type="number"
-                    value={tohCount}
-                    onChange={(e) => setTohCount(e.target.value)}
+                    type="text"
+                    value={!isSwapDirDefault ? solCount : tohCount}
+                    onChange={(e) => {
+                        !isSwapDirDefault
+                            ? updateTopCount(e.target.value)
+                            : updateBotCount(e.target.value)
+                    }}
                     placeholder="0.00"
-                    disabled
                 />
             </div>
 
-            <div
-                className="hero_swapper_connectBtn"
-                onClick={handleConnectWallet}
-                style={{ cursor: "pointer" }}
-            >
-                {walletConnected ? "WALLET CONNECTED" : "CONNECT WALLET"}
-            </div>
+
+            {
+                walletStore.walletConnected ? <div
+                    className="hero_swapper_connectBtn"
+                    onClick={handleSwap}
+                >
+                    SWAP
+                </div> : <div
+                    className="hero_swapper_connectBtn"
+                    onClick={walletStore.connectWallet}
+                >
+                    CONNECT WALLET
+                </div>
+            }
+
         </div>
     );
-}
+})

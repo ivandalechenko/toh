@@ -1,4 +1,7 @@
-export default () => {
+import { observer } from "mobx-react-lite"
+import { walletStore } from "./walletStore"
+
+export default observer(() => {
     return (
         <div className="stats">
             <div className="stats_element component">
@@ -6,7 +9,7 @@ export default () => {
                     PRICE
                 </div>
                 <div className="stats_element_value">
-                    $0.0003512
+                    ${walletStore.priceUsd}
                 </div>
             </div>
             <div className="stats_element component">
@@ -14,9 +17,20 @@ export default () => {
                     MARKET CAP
                 </div>
                 <div className="stats_element_value">
-                    $351K
+                    ${numPrettier(walletStore.mkap)}
                 </div>
             </div>
         </div>
     )
+})
+
+
+
+const numPrettier = (num) => {
+    if (num >= 1_000_000) {
+        return (num / 1_000_000).toFixed(1) + 'm';
+    } else if (num >= 1_000) {
+        return (num / 1_000).toFixed(1) + 'k';
+    }
+    return num.toString();
 }

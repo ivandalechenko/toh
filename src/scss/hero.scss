@@ -131,6 +131,7 @@
             box-shadow: 0px 4px 4px #0004;
             border: 1px solid white;
             text-shadow: 1px 1px 4px #0008;
+            cursor: pointer;
         }
 
 
@@ -151,6 +152,13 @@
             background: #1A1F2E;
             border-radius: 12px;
             box-shadow: 0px 4px 4px #0004;
+            transition: scale 200ms, rotate 200ms;
+
+            &:hover {
+                cursor: pointer;
+                rotate: 5deg;
+                scale: 1.1;
+            }
 
             &_wrapper {
                 width: 100%;

@@ -1,6 +1,8 @@
+import { observer } from "mobx-react-lite";
 import Media from "./Media";
+import { walletStore } from "./walletStore";
 
-export default () => {
+export default observer(() => {
     return (
         <div className="header container">
             <div className="header_logo">
@@ -14,8 +16,18 @@ export default () => {
             </div>
             <div className="header_media">
                 <Media />
-                {/* <button className="header_connect">CONNECT WALLET</button> */}
+                <button className="header_connect" onClick={
+                    () => {
+                        walletStore.walletConnected
+                            ? walletStore.disconnectWallet()
+                            : walletStore.connectWallet()
+                    }
+                }>
+                    {
+                        walletStore.walletConnected ? 'WALLET CONNECTED' : 'CONNECT WALLET'
+                    }
+                </button>
             </div>
         </div>
     )
-}
+})

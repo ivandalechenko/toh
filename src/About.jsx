@@ -1,4 +1,11 @@
+import { toast } from "react-toastify"
+
 export default () => {
+
+    const copy = () => {
+        toast.success('Successfully copied!')
+    }
+
     return (
         <div className="about" id='about'>
             <div className="about_header">
@@ -25,7 +32,7 @@ export default () => {
                         <div className="about_content_ca_value_text">
                             C1u7A1zBp2ck9ui89dVD6VC4FmXNe2C2HK9mPdkVHUSB
                         </div>
-                        <div className="about_content_ca_value_btn">
+                        <div className="about_content_ca_value_btn" onClick={copy}>
                             <img src='/img/copy.svg' alt='decor' />
                         </div>
                     </div>
