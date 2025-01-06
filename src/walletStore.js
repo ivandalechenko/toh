@@ -7,7 +7,7 @@ const toh = "C1u7A1zBp2ck9ui89dVD6VC4FmXNe2C2HK9mPdkVHUSB"
 
 class WalletStore {
     walletConnected = false;
-    publicKey = null;
+    publicKey = '';
 
     inputMint = sol;
     outputMint = toh;
