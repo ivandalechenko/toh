@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import Media from "./Media";
+import Dex from "./Dex";
 import { walletStore } from "./walletStore";
 
 export default observer(() => {
@@ -15,7 +15,7 @@ export default observer(() => {
                 <a href="#faq" className="header_links_element">FAQ</a>
             </div>
             <div className="header_media">
-                <Media />
+                <Dex />
                 <button className="header_connect" onClick={
                     () => {
                         walletStore.walletConnected

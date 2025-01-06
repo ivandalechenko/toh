@@ -9,10 +9,6 @@
     row-gap: 24px;
     padding: 48px 12px !important;
 
-    @media(max-width: 550px) {
-        row-gap: 220px;
-    }
-
     &_light {
         animation: spin 12s ease-in-out infinite alternate;
 
@@ -56,9 +52,11 @@
         font-size: 36px;
         position: relative;
         z-index: 2;
+        margin-top: 32px;
 
         @media(max-width: 550px) {
             font-size: 20px;
+            margin-top: 16px;
         }
 
         span {
@@ -90,21 +88,16 @@
 
         @media(max-width: 550px) {
             width: 100%;
-            height: 0px;
+            height: 500px;
+            order: 2;
         }
     }
 
-    &_dog {
-        @media(max-width: 550px) {
-            top: -200px;
-        }
-    }
+    // &_dog {
+    // }
 
-    &_light {
-        @media(max-width: 550px) {
-            top: -200px;
-        }
-    }
+    // &_light {
+    // }
 
     &_swapper {
         position: relative;
@@ -124,7 +117,8 @@
             align-items: center;
             height: 68px;
             display: flex;
-            background: linear-gradient(136deg, #FF9202, #7C5C39);
+            background: #FF9202;
+            // background: linear-gradient(136deg, #FF9202, #7C5C39);
             font-weight: 600;
             margin-top: 12px;
             border-radius: 12px;

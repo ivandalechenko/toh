@@ -7,6 +7,8 @@ import Roadmap from './Roadmap'
 import Tokenomics from './Tokenomics'
 import About from './About'
 import Hero from './Hero'
+import Footer from './Footer'
+import Chart from './Chart'
 
 import { Slide, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -37,11 +39,13 @@ function App() {
       <Header />
       <Hero />
       <Stats />
+      <Chart />
       <About />
       <Tokenomics />
       <Community />
       <Roadmap />
       <Faq />
+      <Footer />
     </div>
   )
 }
