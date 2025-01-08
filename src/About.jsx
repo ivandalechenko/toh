@@ -1,9 +1,18 @@
 import { toast } from "react-toastify"
 
+const CA = 'C1u7A1zBp2ck9ui89dVD6VC4FmXNe2C2HK9mPdkVHUSB'
+
 export default () => {
 
     const copy = () => {
-        toast.success('Successfully copied!')
+
+        navigator.clipboard.writeText(CA)
+            .then(() => {
+                toast.success('Successfully copied!')
+            })
+            .catch(err => {
+                console.error("Err: ", err);
+            });
     }
 
     return (
@@ -30,7 +39,7 @@ export default () => {
                     </div>
                     <div className="about_content_ca_value">
                         <div className="about_content_ca_value_text">
-                            C1u7A1zBp2ck9ui89dVD6VC4FmXNe2C2HK9mPdkVHUSB
+                            {CA}
                         </div>
                         <div className="about_content_ca_value_btn" onClick={copy}>
                             <img src='/img/copy.svg' alt='decor' />
