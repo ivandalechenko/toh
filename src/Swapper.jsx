@@ -4,7 +4,6 @@ import { Buffer } from "buffer"; // Import Buffer explicitly
 import { walletStore } from "./walletStore"; // Подключение walletStore
 import { observer } from "mobx-react-lite";
 
-let DEVNET_URL = "https://sly-indulgent-wave.solana-mainnet.quiknode.pro/7738767fc1e78d5157e8c6fa4450d9abe43d5127";
 window.Buffer = Buffer;
 
 
@@ -12,12 +11,7 @@ export default observer(function Swapper() {
     const [solCount, setSolCount] = useState("");
     const [tohCount, setTohCount] = useState("");
     const [isSwapDirDefault, setSwapDirDefault] = useState(true);
-    const connection = new Connection(DEVNET_URL);
-
-    useEffect(() => {
-        walletStore.checkWallet();
-    }, []);
-
+    const connection = new Connection(walletStore.DEVNET_URL);
 
 
     const handleSwap = async () => {
@@ -67,7 +61,8 @@ export default observer(function Swapper() {
             const swapTransactionBuf = Buffer.from(swapTransaction, "base64");
             const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
 
-            const provider = walletStore.getProvider();
+            const provider = await walletStore.getProvider();
+
             const signedTransaction = await provider.signTransaction(transaction);
 
             const latestBlockHash = await connection.getLatestBlockhash();
@@ -84,6 +79,7 @@ export default observer(function Swapper() {
             });
 
             console.log(`Transaction successful: https://solscan.io/tx/${txid}`);
+
         } catch (err) {
             console.error("Error during swap:", err);
         }

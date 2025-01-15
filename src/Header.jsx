@@ -24,7 +24,7 @@ export default observer(() => {
                     }
                 }>
                     {
-                        walletStore.walletConnected ? `${walletStore.publicKey.slice(0, 4)}...${walletStore.publicKey.slice(-4)}` : ' CONNECT WALLET'
+                        walletStore.walletConnected ? `${walletStore.publicKey?.slice(0, 4)}...${walletStore.publicKey?.slice(-4)}` : ' CONNECT WALLET'
                     }
                 </button>
             </div>

@@ -1,9 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
-
+import { PhantomWalletAdapter, SolflareWalletAdapter, CoinbaseWalletAdapter, TrustWalletAdapter, LedgerWalletAdapter } from '@solana/wallet-adapter-wallets';
 const sol = "So11111111111111111111111111111111111111112"
 const toh = "C1u7A1zBp2ck9ui89dVD6VC4FmXNe2C2HK9mPdkVHUSB"
-
 
 class WalletStore {
     walletConnected = false;
@@ -14,51 +13,56 @@ class WalletStore {
     solPerToh = 0.00000001;
     priceUsd = 0.00000001;
     mkap = 10000;
+    selectedWallet = 'phantom';
+    // selectedWallet = 'trust';
+    // selectedWallet = 'solflare';
+    // selectedWallet = 'coinbase';
+    solFlareWallet = 0
+    adapter = null;
 
+    DEVNET_URL = "https://sly-indulgent-wave.solana-mainnet.quiknode.pro/7738767fc1e78d5157e8c6fa4450d9abe43d5127";
 
 
     constructor() {
         makeAutoObservable(this);
     }
 
-    setSwapDir(status) {
-        if (status) {
-            this.inputMint = sol;
-            this.outputMint = toh;
-        } else {
-            this.inputMint = toh;
-            this.outputMint = sol;
-        }
-    }
 
 
-    getProvider = () => {
-        if ("phantom" in window) {
-            const provider = window.phantom?.solana;
-            if (provider?.isPhantom) {
-                return provider;
-            }
+    getProvider = async () => {
+        if (this.selectedWallet === 'phantom') {
+            if (!this.adapter) this.adapter = new PhantomWalletAdapter()
         }
-        window.open("https://phantom.app/", "_blank");
+        if (this.selectedWallet === 'trust') {
+            if (!this.adapter) this.adapter = new TrustWalletAdapter()
+        }
+        if (this.selectedWallet === 'coibase') {
+            if (!this.adapter) this.adapter = new CoinbaseWalletAdapter()
+        }
+        if (this.selectedWallet === 'solflare') {
+            if (!this.adapter) this.adapter = new SolflareWalletAdapter()
+        }
+        if (this.selectedWallet === 'ledger') {
+            if (!this.adapter) this.adapter = new LedgerWalletAdapter()
+        }
+        return this.adapter
+
     };
 
     connectWallet = async () => {
-        const provider = this.getProvider();
-        if (!provider) return;
-
+        const provider = await this.getProvider();
+        provider.on('connect', () => this.publicKey = provider.publicKey.toString())
         try {
-            const resp = await provider.connect();
-            this.walletConnected = true;
-            this.publicKey = resp.publicKey.toString();
-            toast.success("Wallet connected successfully.");
-        } catch (err) {
-            console.error("Wallet connection failed:", err);
-            toast.warning("Failed to connect wallet.");
+            await provider.connect({ network: 'mainnet-beta' })
+        } catch (error) {
+            console.log(JSON.stringify(error));
         }
+
+        this.walletConnected = true
     };
 
     disconnectWallet = async () => {
-        const provider = this.getProvider();
+        const provider = await this.getProvider();
         if (!provider) return;
 
         try {
@@ -72,19 +76,16 @@ class WalletStore {
         }
     };
 
-    checkWallet = async () => {
-        const provider = this.getProvider();
-        if (provider) {
-            try {
-                const resp = await provider.connect({ onlyIfTrusted: true });
-                this.walletConnected = true;
-                this.publicKey = resp.publicKey.toString();
-            } catch (err) {
-                console.error("Error connecting to wallet:", err);
-            }
-        }
-    };
 
+    setSwapDir(status) {
+        if (status) {
+            this.inputMint = sol;
+            this.outputMint = toh;
+        } else {
+            this.inputMint = toh;
+            this.outputMint = sol;
+        }
+    }
     getCurr = async () => {
         const res = await fetch('https://api.dexscreener.com/latest/dex/tokens/C1u7A1zBp2ck9ui89dVD6VC4FmXNe2C2HK9mPdkVHUSB')
         const data = await res.json();

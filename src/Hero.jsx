@@ -1,13 +1,13 @@
 
 
-import { WalletProvider } from '@solana/wallet-adapter-react';
-import { ConnectionProvider } from '@solana/wallet-adapter-react';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import Swapper from './Swapper';
-import '@solana/wallet-adapter-react-ui/styles.css';
+import { walletStore } from './walletStore';
+import { useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
+
 
 export default () => {
-    const wallets = [new PhantomWalletAdapter()];
+
     return (
         <div className="hero container_mini">
             <div className="hero_top">
@@ -27,11 +27,7 @@ export default () => {
                         <img src='/img/dog.png' alt='decor' />
                     </div>
                 </div>
-                <ConnectionProvider endpoint="https://api.mainnet-beta.solana.com">
-                    <WalletProvider wallets={wallets} autoConnect>
-                        <Swapper />
-                    </WalletProvider>
-                </ConnectionProvider>
+                <Swapper />
             </div>
         </div>
     )
