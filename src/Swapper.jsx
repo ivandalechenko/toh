@@ -3,6 +3,7 @@ import { Connection, PublicKey, Transaction, VersionedTransaction } from "@solan
 import { Buffer } from "buffer"; // Import Buffer explicitly
 import { walletStore } from "./walletStore"; // Подключение walletStore
 import { observer } from "mobx-react-lite";
+import ReactGA from "react-ga4";
 
 window.Buffer = Buffer;
 
@@ -11,81 +12,96 @@ export default observer(function Swapper() {
     const [solCount, setSolCount] = useState("");
     const [tohCount, setTohCount] = useState("");
     const [isSwapDirDefault, setSwapDirDefault] = useState(true);
-    const connection = new Connection(walletStore.DEVNET_URL);
+    // const connection = new Connection(walletStore.DEVNET_URL);
+
+
+    // const handleSwap = async () => {
+    //     if (!walletStore.walletConnected || !walletStore.publicKey) {
+    //         toast.warning("Please connect your wallet first.");
+    //         return;
+    //     }
+
+    //     try {
+    //         const solCountLamports = parseFloat(solCount) * 1e9;
+    //         if (isNaN(solCountLamports) || solCountLamports <= 0) {
+    //             toast.warning("Enter a valid SOL amount.");
+    //             return;
+    //         }
+
+    //         const queryParams = new URLSearchParams({
+    //             inputMint: walletStore.inputMint,
+    //             outputMint: walletStore.outputMint,
+    //             amount: solCountLamports.toString(),
+    //             slippageBps: "50",
+    //         }).toString();
+
+    //         const quoteResponse = await fetch(`https://quote-api.jup.ag/v6/quote?${queryParams}`, {
+    //             method: "GET",
+    //             headers: { "Content-Type": "application/json" },
+    //         });
+
+    //         const quoteData = await quoteResponse.json();
+    //         const { routePlan } = quoteData;
+
+    //         if (!routePlan || routePlan.length === 0 || !routePlan[0]?.swapInfo) {
+    //             toast.warning("No valid route found for the swap.");
+    //             return;
+    //         }
+
+    //         const swapResponse = await fetch("https://quote-api.jup.ag/v6/swap", {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify({
+    //                 quoteResponse: quoteData,
+    //                 userPublicKey: walletStore.publicKey,
+    //                 wrapAndUnwrapSOL: true,
+    //             }),
+    //         });
+
+    //         const { swapTransaction } = await swapResponse.json();
+    //         const swapTransactionBuf = Buffer.from(swapTransaction, "base64");
+    //         const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
+
+    //         const provider = await walletStore.getProvider();
+
+    //         const signedTransaction = await provider.signTransaction(transaction);
+
+    //         const latestBlockHash = await connection.getLatestBlockhash();
+    //         const rawTransaction = signedTransaction.serialize();
+
+    //         const txid = await connection.sendRawTransaction(rawTransaction, {
+    //             skipPreflight: true,
+    //             maxRetries: 2,
+    //         });
+    //         await connection.confirmTransaction({
+    //             blockhash: latestBlockHash.blockhash,
+    //             lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+    //             signature: txid,
+    //         });
+
+    //         console.log(`Transaction successful: https://solscan.io/tx/${txid}`);
+
+    //     } catch (err) {
+    //         console.error("Error during swap:", err);
+    //     }
+    // };
 
 
     const handleSwap = async () => {
-        if (!walletStore.walletConnected || !walletStore.publicKey) {
-            toast.warning("Please connect your wallet first.");
-            return;
-        }
 
-        try {
-            const solCountLamports = parseFloat(solCount) * 1e9;
-            if (isNaN(solCountLamports) || solCountLamports <= 0) {
-                toast.warning("Enter a valid SOL amount.");
-                return;
-            }
-
-            const queryParams = new URLSearchParams({
-                inputMint: walletStore.inputMint,
-                outputMint: walletStore.outputMint,
-                amount: solCountLamports.toString(),
-                slippageBps: "50",
-            }).toString();
-
-            const quoteResponse = await fetch(`https://quote-api.jup.ag/v6/quote?${queryParams}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            });
-
-            const quoteData = await quoteResponse.json();
-            const { routePlan } = quoteData;
-
-            if (!routePlan || routePlan.length === 0 || !routePlan[0]?.swapInfo) {
-                toast.warning("No valid route found for the swap.");
-                return;
-            }
-
-            const swapResponse = await fetch("https://quote-api.jup.ag/v6/swap", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    quoteResponse: quoteData,
-                    userPublicKey: walletStore.publicKey,
-                    wrapAndUnwrapSOL: true,
-                }),
-            });
-
-            const { swapTransaction } = await swapResponse.json();
-            const swapTransactionBuf = Buffer.from(swapTransaction, "base64");
-            const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
-
-            const provider = await walletStore.getProvider();
-
-            const signedTransaction = await provider.signTransaction(transaction);
-
-            const latestBlockHash = await connection.getLatestBlockhash();
-            const rawTransaction = signedTransaction.serialize();
-
-            const txid = await connection.sendRawTransaction(rawTransaction, {
-                skipPreflight: true,
-                maxRetries: 2,
-            });
-            await connection.confirmTransaction({
-                blockhash: latestBlockHash.blockhash,
-                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-                signature: txid,
-            });
-
-            console.log(`Transaction successful: https://solscan.io/tx/${txid}`);
-
-        } catch (err) {
-            console.error("Error during swap:", err);
-        }
-    };
+        ReactGA.gtag("event", "purchase", {
+            value: +solCount,
+            currency: "SOL"
+        });
 
 
+        // gtag("event", "purchase", {
+        //     value: +solCount,
+        //     currency: "SOL"
+        // });
+        // fbq('track', 'Purchase', { value: +solCount, currency: 'SOL' });
+        window.location.href = "https://raydium.io/swap/?inputMint=sol&outputMint=C1u7A1zBp2ck9ui89dVD6VC4FmXNe2C2HK9mPdkVHUSB";
+    }
 
     const swapInputOutput = () => {
         const oldStatus = isSwapDirDefault;
@@ -202,7 +218,7 @@ export default observer(function Swapper() {
             </div>
 
 
-            {
+            {/* {
                 walletStore.walletConnected ? <div
                     className="hero_swapper_connectBtn"
                     onClick={handleSwap}
@@ -214,7 +230,20 @@ export default observer(function Swapper() {
                 >
                     CONNECT WALLET
                 </div>
-            }
+            } */}
+            <div
+                className="hero_swapper_connectBtn"
+                onClick={handleSwap}
+            >
+                SWAP
+            </div>
+
+            {/* gtag("event", "purchase", {
+                value: +solCount,
+            currency: "SOL"
+        });
+            fbq('track', 'Purchase', {value: +solCount, currency: 'SOL' });
+            window.location.href = "https://raydium.io/swap/?inputMint=sol&outputMint=C1u7A1zBp2ck9ui89dVD6VC4FmXNe2C2HK9mPdkVHUSB"; */}
 
         </div>
     );

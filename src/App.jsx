@@ -9,15 +9,20 @@ import About from './About'
 import Hero from './Hero'
 import Footer from './Footer'
 import Chart from './Chart'
+import ReactGA from "react-ga4";
+
 
 import { Slide, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { walletStore } from './walletStore'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   useEffect(() => {
+    // cheliki
+    // ReactGA.initialize("GTM-KWRVH52D");
+    // me
+    ReactGA.initialize("GTM-PHL3QF6G");
     walletStore.getCurr()
   }, [])
 

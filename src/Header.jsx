@@ -1,8 +1,23 @@
 import { observer } from "mobx-react-lite";
 import Dex from "./Dex";
 import { walletStore } from "./walletStore";
+import ReactGA from "react-ga4";
 
 export default observer(() => {
+
+    const buy = () => {
+
+        ReactGA.gtag("event", "purchase", {
+            value: 0.00,
+            currency: "SOL"
+        });
+
+
+
+        // fbq('track', 'Purchase', { value: 0.00, currency: 'SOL' });
+        window.location.href = "https://raydium.io/swap/?inputMint=sol&outputMint=C1u7A1zBp2ck9ui89dVD6VC4FmXNe2C2HK9mPdkVHUSB";
+    }
+
     return (
         <div className="header container">
             <div className="header_logo">
@@ -16,16 +31,11 @@ export default observer(() => {
             </div>
             <div className="header_media">
                 <Dex />
-                <button className="header_connect" onClick={
-                    () => {
-                        walletStore.walletConnected
-                            ? walletStore.disconnectWallet()
-                            : walletStore.connectWallet()
-                    }
-                }>
-                    {
+                <button className="header_connect" onClick={buy}>
+                    BUY NOW
+                    {/* {
                         walletStore.walletConnected ? `${walletStore.publicKey?.slice(0, 4)}...${walletStore.publicKey?.slice(-4)}` : ' CONNECT WALLET'
-                    }
+                    } */}
                 </button>
             </div>
         </div>
