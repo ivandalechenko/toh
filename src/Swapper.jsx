@@ -3,7 +3,7 @@ import { Connection, PublicKey, Transaction, VersionedTransaction } from "@solan
 import { Buffer } from "buffer"; // Import Buffer explicitly
 import { walletStore } from "./walletStore"; // Подключение walletStore
 import { observer } from "mobx-react-lite";
-import ReactGA from "react-ga4";
+// import ReactGA from "react-ga4";
 
 window.Buffer = Buffer;
 
@@ -89,10 +89,10 @@ export default observer(function Swapper() {
 
     const handleSwap = async () => {
 
-        ReactGA.gtag("event", "purchase", {
-            value: +solCount,
-            currency: "SOL"
-        });
+        // ReactGA.gtag("event", "purchase", {
+        //     value: +solCount,
+        //     currency: "SOL"
+        // });
 
 
         // gtag("event", "purchase", {

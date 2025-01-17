@@ -19,10 +19,8 @@ import { walletStore } from './walletStore'
 function App() {
 
   useEffect(() => {
-    // cheliki
+    //
     // ReactGA.initialize("GTM-KWRVH52D");
-    // me
-    ReactGA.initialize("GTM-PHL3QF6G");
     walletStore.getCurr()
   }, [])
 

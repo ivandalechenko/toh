@@ -1,16 +1,16 @@
 import { observer } from "mobx-react-lite";
 import Dex from "./Dex";
 import { walletStore } from "./walletStore";
-import ReactGA from "react-ga4";
+// import ReactGA from "react-ga4";
 
 export default observer(() => {
 
     const buy = () => {
 
-        ReactGA.gtag("event", "purchase", {
-            value: 0.00,
-            currency: "SOL"
-        });
+        // ReactGA.gtag("event", "purchase", {
+        //     value: 0.00,
+        //     currency: "SOL"
+        // });
 
 
 
