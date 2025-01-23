@@ -235,7 +235,7 @@ export default observer(function Swapper() {
                 className="hero_swapper_connectBtn"
                 onClick={handleSwap}
             >
-                SWAP
+                BUY NOW
             </div>
             <div className='hero_swapper_trust'>
                 Powered by Raydium Protocol
